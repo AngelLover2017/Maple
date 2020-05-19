@@ -1,16 +1,21 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow , ipcMain} = require('electron')
+const { app, BrowserWindow, Menu } = require('electron')
 const path = require('path')
+const { template } = require('./main/menu')
 
-function createWindow () {
+
+function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      devTools : true,
-      nodeIntegration : true,
-      preload: path.join(__dirname, 'preload.js')
+      devTools: true,
+      webSecurity: false,
+      nodeIntegration: true,
+      image : true,
+      allowRunningInsecureContent:true,
+      preload: path.join(__dirname, './preload.js')
     }
   })
 
@@ -19,6 +24,10 @@ function createWindow () {
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
+
+
+  const menu = Menu.buildFromTemplate(template)
+  Menu.setApplicationMenu(menu)
 }
 
 // This method will be called when Electron has finished
@@ -42,8 +51,3 @@ app.on('activate', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
-ipcMain.on("synMesg",(event,arg)=>{
-  event.returnValue = {
-    data : "Hello , i am Main process"
-  }
-})

@@ -1,0 +1,44 @@
+{
+    "theme" : {
+        "global" : {
+            "background" : "",
+            "color" : "",
+            "fontSize" : ""
+        },
+        "sidebar" : {
+            "background" : "",
+            "color" : "",
+            "fontSize" : ""
+        },
+        "content" : {
+            "background" : "",
+            "color" : "",
+            "fontSize" : ""
+        },
+        "editbar" :{
+            "background" : "",
+            "color" : "",
+            "fontSize" : ""
+        },
+        "viewbar" :{
+            "background" : "",
+            "color" : "",
+            "fontSize" : ""
+        },
+        "footer":{
+            "background" : "",
+            "color" : "",
+            "fontSize" : ""
+        }
+    },
+    "article" : {
+        "LineHeight" : "",
+        "ParagraphSpace" : "",
+        "TitleIndent" : "",
+        "ParagraphIndent" : "",
+        "ListIndent" : "",
+        "BlockquoteColor" : "",
+        "ImagePattern" : "",
+        "CodeTheme" : ""
+    }
+}

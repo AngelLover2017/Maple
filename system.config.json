@@ -1,0 +1,100 @@
+{
+    "sidebar" : {
+        "background" : "#fff",
+        "color" : "#000"
+    } ,
+    "content" : {
+        "background" : "#fff",
+        "color" : "#000"
+    },
+    "editbar" : {
+        "background" : "#fff",
+        "color" : "#000"
+    },
+    "viewbar" : {
+
+    },
+    "article" : {
+        "md-article" : {
+            "padding" : "10px 10px 50px 10px"
+        },
+        "md-h1" : {
+            "padding-left":"5px",
+            "padding-bottom" : "10px"
+        },
+        "md-h2" : {
+            "padding-left":"5px",
+            "padding-bottom" : "10px"
+        },
+        "md-h3" : {
+            "padding-left":"5px",
+            "padding-bottom" : "10px"
+        },
+        "md-h4" : {
+            "padding-left":"5px",
+            "padding-bottom" : "10px"
+        },
+        "md-h5" : {
+            "padding-left":"5px"
+        },
+        "md-h6" : {
+            "padding-left":"5px",
+            "padding-bottom" : "10px"
+        },
+        "md-p" : {
+            "padding-left":"15px",
+            "padding-bottom" : "10px"
+        },
+        "md-strong" : {
+            
+        },
+        "md-em" : {
+            
+        },
+        "md-code" : {
+            "background":"red",
+            "color" : "blue"
+        },
+        "md-a" : {
+            
+        },
+        "md-list" : {
+            "padding-left":"15px",
+            "padding-bottom" : "10px"
+        },
+        "md-li" : {
+            "padding-bottom" : "15px"
+        },
+        "md-subli" : {
+            "padding-bottom" : "15px"
+        },
+        "md-pre" : {
+            "background":"black",
+            "color" : "green"
+        },
+        "md-blockcode" : {
+            
+        },
+        "md-blockquote" : {
+            "border-left" : "5px solid green",
+            "margin" : "10px 0px 10px 0px",
+            "padding-left" : "10px"
+        },
+        "md-figure" : {
+            
+        },
+        "md-img" : {
+            
+        },
+        "md-figcaption" : {
+            
+        },
+        "md-hr" : {
+            
+        }
+    },
+    "footer" : {
+        "background" : "#fff",
+        "color" : "#000"
+    }
+}
