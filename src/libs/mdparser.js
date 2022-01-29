@@ -1,4 +1,8 @@
 const md5 = window.require('md5-node')
+/**
+ *  bug : 有序列表 olist 编译有问题，会卡住，应该是死循环了，内存吃的多
+ *  olist词法分析没有问题，语法分析会卡住
+ */
 class MDParser {
     /*
     * input 输入的字符串
@@ -154,7 +158,7 @@ class MDParser {
         allFunc.h3 = endStatusTemplate("h3");
         allFunc.h2 = endStatusTemplate("h2");
         allFunc.h1 = endStatusTemplate("h1");
-        let hTemplate = toStartTrueTemplate(['#', ' ']);
+        let hTemplate = toStartFalseTemplate(['#', ' ']);
         allFunc.toh6 = toStartFalseTemplate([' '])(["h6"])("");
         allFunc.toh5 = hTemplate(["toh6", "h5"])("");
         allFunc.toh4 = hTemplate(["toh5", "h4"])("");
@@ -174,8 +178,7 @@ class MDParser {
         allFunc.hr1 = starT(['hr1'])("hr")
         allFunc.hr2 = rmT(['hr2'])("hr");
         allFunc.tohr21 = toStartFalseTemplate([' ', '-'])(["ul", "tohr22"])("");
-        allFunc.tohr22 = rmT(['tohr23'])("");
-        allFunc.tohr23 = rmT(['hr2'])("")
+        allFunc.tohr22 = rmT(['hr2'])("");
         allFunc.hr3 = underT(['hr3'])('hr')
         allFunc.toul = toStartFalseTemplate([' '])(['ul'])("")
         allFunc.ul = endStatusTemplate("ul")
@@ -1251,6 +1254,13 @@ class MDParser {
                             // 顺便重构虚拟DOM
                             T1node.attributes = T2node.attributes;
                             //生成操作脚本
+                            /**
+                             * bug : 逻辑错误了
+                             * 替换操作需要把旧VDOM中的节点替换到新VDOM中对应的位置上
+                             * 除此之外，不能分为replace,delete,insert三个操作集合，
+                             * 而应该是随着diff所有操作流程化到一个集合里
+                             * args : [T1node.attributes.id,index,T1node.attributes, T2node.attributes]
+                             */
                             option.replace.push({
                                 optName: 'replace',
                                 type: 'attr',

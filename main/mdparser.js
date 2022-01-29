@@ -9,7 +9,7 @@ class MDParser {
          * tokens 输出的token流
          * tnode 抽象语法树 
         */
-        this.data = input?input+'\r\n':"";
+        this.data = input ? input + '\r\n' : "";
         this.tokens = [];
         this.vnode = {};
         this.newVnode = {};
@@ -18,7 +18,17 @@ class MDParser {
         this.firstIDGenerator = 0;
         this.firstCallVnode = true;
     }
-    setData(input){
+    clear(){
+        this.data = "";
+        this.tokens = [];
+        this.vnode = {};
+        this.newVnode = {};
+        this.dom = {};
+        this.option = {};
+        this.firstIDGenerator = 0;
+        this.firstCallVnode = true;
+    }
+    setData(input) {
         this.data = input + '\r\n';
     }
     getTokens() {
@@ -27,13 +37,13 @@ class MDParser {
     getVnode() {
         return this.vnode;
     }
-    getNewVnode(){
+    getNewVnode() {
         return this.newVnode;
     }
-    getOption(){
+    getOption() {
         return this.option;
     }
-    getFirstCallVnode(){
+    getFirstCallVnode() {
         return this.firstCallVnode;
     }
     getDOM() {
@@ -76,11 +86,11 @@ class MDParser {
         ]);
         /**
          * 
-         * @param {Array<string>} testchar 
-         * @param {Array<string | RegExp>} nextMatch 
-         * @param {boolean} isEndStatus 
-         * @param {string} otherStatus 
-         * @param {string} tokenLabel
+         * @param {Array<string  | RegExp>} testchar 当前状态下一个要匹配字符或正则表示的集合
+         * @param {Array<string>} nextMatch 当前状态下一个可能达到状态的集合，需与testchar集合一一对应
+         * @param {boolean} isEndStatus 当前状态是否是终结状态
+         * @param {string} otherStatus 匹配失败，当前字符应交给那个状态函数
+         * @param {string} tokenLabel Token类型名称
          */
         let factory = function (otherStatus) {
             //生成模板函数
@@ -124,8 +134,6 @@ class MDParser {
                     }
                 }
             }
-
-
         }
 
         /* predefined */
@@ -144,7 +152,7 @@ class MDParser {
         allFunc.h3 = endStatusTemplate("h3");
         allFunc.h2 = endStatusTemplate("h2");
         allFunc.h1 = endStatusTemplate("h1");
-        let hTemplate = toStartTrueTemplate(['#', ' ']);
+        let hTemplate = toStartFalseTemplate(['#', ' ']);
         allFunc.toh6 = toStartFalseTemplate([' '])(["h6"])("");
         allFunc.toh5 = hTemplate(["toh6", "h5"])("");
         allFunc.toh4 = hTemplate(["toh5", "h4"])("");
@@ -164,8 +172,7 @@ class MDParser {
         allFunc.hr1 = starT(['hr1'])("hr")
         allFunc.hr2 = rmT(['hr2'])("hr");
         allFunc.tohr21 = toStartFalseTemplate([' ', '-'])(["ul", "tohr22"])("");
-        allFunc.tohr22 = rmT(['tohr23'])("");
-        allFunc.tohr23 = rmT(['hr2'])("")
+        allFunc.tohr22 = rmT(['hr2'])("");
         allFunc.hr3 = underT(['hr3'])('hr')
         allFunc.toul = toStartFalseTemplate([' '])(['ul'])("")
         allFunc.ul = endStatusTemplate("ul")
@@ -535,6 +542,7 @@ class MDParser {
                     {
                         nodeName: 'em',
                         attributes: {
+                            id : idGenerator(),
                             class: 'md-em'
                         },
                         children: []
@@ -884,6 +892,7 @@ class MDParser {
                     {
                         nodeName: 'code',
                         attributes: {
+                            id : idGenerator(),
                             class: 'md-blockcode'
                         },
                         children: []
@@ -995,7 +1004,10 @@ class MDParser {
                     {
                         nodeName: 'img',
                         attributes: {
+                            id : idGenerator(),
                             class: 'md-img',
+                            width : '100%',
+                            height : 'auto',
                             src: ""
                         },
                         children: []
@@ -1003,6 +1015,7 @@ class MDParser {
                     {
                         nodeName: 'figcaption',
                         attributes: {
+                            id : idGenerator(),
                             class: 'md-figcaption'
                         },
                         children: []
@@ -1088,9 +1101,11 @@ class MDParser {
             return hr;
         }
         //主控程序:执行递归下降分析
-        if(this.firstCallVnode)
+        if (this.firstCallVnode) {
             this.vnode = article();
-        else 
+            this.firstCallVnode = false;
+        }
+        else
             this.newVnode = article();
         return this;
     }
@@ -1119,7 +1134,7 @@ class MDParser {
         let track = [];
         let domtrack = [];
         //初始化
-        let treeNode = vnode ;
+        let treeNode = vnode;
         let DOM = this.createDOM(treeNode)
         track.push(treeNode);
         domtrack.push(DOM);
@@ -1138,12 +1153,12 @@ class MDParser {
         }
         return DOM;
     }
-    firstBuild(){
+    firstBuild() {
         this.dom = this.generateDOM(this.vnode);
         return this;
     }
-    diffBuild(){
-        this.diff(this.getVnode(),this.getNewVnode()).updateDOM();
+    diffBuild() {
+        this.diff(this.getVnode(), this.getNewVnode()).updateDOM();
         return this;
     }
     /**
@@ -1152,6 +1167,7 @@ class MDParser {
      * @param {newTree} T2 
      */
     diff(T1, T2) {
+        console.log("T1-diff",T1);
         let option = {
             delete: [],
             insert: [],
@@ -1173,7 +1189,7 @@ class MDParser {
             //同级Mapping算法
             let M_T1_to_T2 = new Map()
             let M_T2_to_T1 = new Map()
-            for (let [i, T2node] of T2_children.entries()) {
+            for (let [i, T2node]     of T2_children.entries()) {
                 for (let [j, T1node] of T1_children.entries()) {
                     let flag = false
                     if (typeof T2node === 'string' || typeof T1node === 'string') {
@@ -1194,6 +1210,7 @@ class MDParser {
                     }
                 }
             }
+            console.log(M_T1_to_T2 ,M_T2_to_T1)
             /* 遍历Map，生成该级编辑脚本
              * 对于T1_children，未匹配的要做删除操作
              * 对于T2_children，未匹配的要做创建与插入操作
@@ -1201,7 +1218,9 @@ class MDParser {
              */
             for (let [index, item] of T1_children.entries()) {
                 if (!M_T1_to_T2.has(index)) {
-                    // delete(item.attributes.id)//
+                    // 顺便构建新的虚拟DOM
+                    T1_pnode.children.splice(index,1);
+                    //生成操作脚本
                     option.delete.push({
                         optName: 'delete',
                         type: item.attributes ? "ele" : 'text',
@@ -1211,35 +1230,46 @@ class MDParser {
             }
             for (let [index, item] of T2_children.entries()) {
                 if (M_T2_to_T1.has(index)) {
-                    let T1node = item
-                    let T2node = T2_children[M_T2_to_T1.get(index)]
-                    let flag = typeof T1node === 'string'
+                    let T2node = item
+                    let T1node = T1_children[M_T2_to_T1.get(index)]
+                    let flag = typeof T1node === 'string' || typeof T2node === 'string';
                     if (!flag) {
-                        let judge1 = T1node.attributes.length == T2node.attributes.length ? true : false;
-                        let judge2 = true;
-                        if (judge1) {
+                        let isSameLength = Object.keys(T1node.attributes).length == Object.keys(T2node.attributes).length ? true : false;
+                        let hasDiffEle = false;
+                        if (isSameLength) {
                             for (let key in T1node.attributes) {
                                 if (T1node.attributes[key] != T2node.attributes[key]) {
-                                    judge2 = false;
+                                    hasDiffEle = true;
                                     break;
                                 }
                             }
                         }
-                        if (judge1 && judge2) {
-                            // replace(id,attr)
+                        if (!isSameLength || hasDiffEle){
+                            // 顺便重构虚拟DOM
+                            T1node.attributes = T2node.attributes;
+                            //生成操作脚本
+                            /**
+                             * bug : 逻辑错误了
+                             * 替换操作需要把旧VDOM中的节点替换到新VDOM中对应的位置上
+                             * 除此之外，不能分为replace,delete,insert三个操作集合，
+                             * 而应该是随着diff所有操作流程化到一个集合里
+                             * args : [T1node.attributes.id,index,T1node.attributes, T2node.attributes]
+                             */
                             option.replace.push({
                                 optName: 'replace',
                                 type: 'attr',
-                                args: [item.attributes.id, item.attributes]
+                                args: [T1node.attributes.id, T1node.attributes, T2node.attributes] //把T1中的删掉，T2中的添加
                             })
                         }
                     }
                 } else {
-                    //先生成自己的id，然后再插入
+                    //顺便重构虚拟DOM
+                    T1_pnode.children.splice(index,0,item);
+                    //先生成自己的id，然后再插入T1
                     option.insert.push({
                         optName: 'insert',
                         type: item.attributes ? "ele" : 'text',
-                        args: [T2_pnode.attributes.id, index, item]
+                        args: [T1_pnode.attributes.id, index, item]
                     })
                     // index < T1_children.length ?
                     //     console.log("insetBefore:" + (item.attributes ? item.attributes.id : item)) : console.log("appendChild:" + (item ? item.attributes.id : item));
@@ -1253,42 +1283,48 @@ class MDParser {
             }
         }
         this.option = option
+        console.log("option-diff",option)
+        console.log("T1-diff",T1)
+        this.vnode = T1
         return this;
     }
 
-    updateDOM(){
-        for(let item of this.option.replace.values()){
+    updateDOM() {
+        console.log(this.getOption())
+        for (let item of this.option.replace.values()) {
             let obj = document.getElementById(item.args[0])
             //添加属性：obj.setAttribute('attr_name','attr_value');
             //删除属性：obj.removeAttribute('attr_name');
-            for(let key in item.args[1]){
-                obj.removeAttribute(key)
+            for (let key in item.args[1]) {
+                if(key != 'id')
+                    obj.removeAttribute(key)
             }
-            for(let key in item.args[2]){
-                obj.setAttribute(key,item.args[2][key])
+            for (let key in item.args[2]) {
+                if(key != 'id')
+                    obj.setAttribute(key, item.args[2][key])
             }
         }
-        for(let item of this.option.delete.values()){
+        for (let item of this.option.delete.values()) {
             //删除节点：
             let obj = document.getElementById(item.args[0])
-            if(item.type === 'ele'){
+            if (item.type === 'ele') {
                 obj.parentNode.removeChild(obj)
             }
-            if(item.type === 'text'){
-                let child = obj.children[item.args[1]]
+            if (item.type === 'text') {
+                let child = obj.childNodes[item.args[1]]
                 obj.removeChild(child)
             }
         }
-        for(let item of this.option.insert.values()){
+        for (let item of this.option.insert.values()) {
             // node.insertBefore(newnode,existingnode)
             let obj = document.getElementById(item.args[0])
-            let refChildDOM = obj.children[item.args[1]]
+            let refChildDOM = obj.childNodes[item.args[1]]
             let newchildDOM = this.generateDOM(item.args[2])
-            obj.insertBefore(newchildDOM,refChildDOM)
+            obj.insertBefore(newchildDOM, refChildDOM)
         }
         return this;
     }
 }
 module.exports = {
-    MDParser 
+    MDParser
 };
